@@ -12,6 +12,8 @@ target = "LandAverageTemperature" #set the column LandAverageTemperature as the 
 
 test, train, x_test, x_train, y_train = global_temperature_data(predictors, target)
 
+# Linear ------------------------------------------------------------------------------------------ 
+
 reg = Ridge(alpha=alpha) #set the ridge regression from sklearn
 reg.fit(x_train, y_train) #apply the ridge regression from sklearn
 prediction_sklearn = reg.predict(x_test) #predict data of test set with ridge regression 
@@ -29,6 +31,16 @@ poly_reg = make_pipeline(PolynomialFeatures(2), Ridge(alpha=alpha)) #defines the
 poly_reg.fit(x_train, y_train) #apply the ridge regression from sklearn
 poly_predictions = poly_reg.predict(x_test) #predict data of test set with ridge regression 
 
-print(poly_predictions - prediction_sklearn)
+# print(poly_predictions - prediction_sklearn)
 
+# Polynomial alpha test ------------------------------------------------------------------------------------------ 
+
+alphas = [10**i for i in range(-2, 5)]
+predictions = []
+for alpha in alphas:
+    model = make_pipeline(PolynomialFeatures(2), Ridge(alpha=alpha))
+    model.fit(x_train, y_train)
+    predictions.append(model.predict(x_train))
+    
+print([predictions[i][0] for i in range(-2, 5)])
 

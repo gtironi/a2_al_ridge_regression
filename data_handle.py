@@ -4,7 +4,7 @@ from sklearn.model_selection import train_test_split
 def global_temperature_data(predictors, target):
     global_temperatures = pd.read_csv('globaltemperature/GlobalTemperatures.csv', parse_dates=['dt']) #read the data from csv
     mean_temp_year = global_temperatures.groupby(global_temperatures.dt.dt.year).mean().drop('dt', axis=1).reset_index().rename({'dt': 'year'}, axis = 1) #group the data by year and made some modifications in the columns
-    mean_temp_year = mean_temp_year[mean_temp_year.LandAverageTemperatureUncertainty <= 1]
+    mean_temp_year = mean_temp_year[mean_temp_year.LandAverageTemperatureUncertainty <= 1] #filter out entries with uncertainty > 1 degree celsius
 
     less_2000 = mean_temp_year[mean_temp_year.year < 2000] #filter the data. Take just data with year < 2000
     train, test = train_test_split(less_2000, test_size=0.2, random_state=42) #split the dataset into train and test set
