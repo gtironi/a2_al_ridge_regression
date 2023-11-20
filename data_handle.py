@@ -8,6 +8,9 @@ def global_temperature_data(predictors, target):
 
     less_2000 = mean_temp_year[mean_temp_year.year < 2000] #filter the data. Take just data with year < 2000
     train, test = train_test_split(less_2000, test_size=0.2, random_state=42) #split the dataset into train and test set
+    
+    train.sort_values(by=['year'], inplace=True)
+    test.sort_values(by=['year'], inplace=True)
 
     y_train = list(train[target]) #make a list with the data from column target
     years_train = list(train[predictors]) #make a list with the data from column predict (train set)
