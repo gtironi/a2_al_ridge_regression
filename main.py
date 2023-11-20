@@ -13,7 +13,7 @@ alpha = 1
 predictors = "year" #set the column year as the predictor
 target = "LandAverageTemperature" #set the column LandAverageTemperature as the thing we need to predict
 
-test, train, x_test, x_train, y_train = global_temperature_data(predictors, target)
+test, train, x_test, x_train, y_train, future_x, future_y = global_temperature_data(predictors, target)
 
 # Linear ------------------------------------------------------------------------------------------ 
 
@@ -126,3 +126,12 @@ predictions_4D = model4D.predict(x_test)
 from sklearn.metrics import mean_absolute_error
 
 print(f"O erro do modelo P4 foi: {mean_absolute_error(test[target], predictions_4D)} ºC \nO erro do modelo P6 foi: {mean_absolute_error(test[target], predictions_6D)} ºC")
+
+# testing the best model on future data ------------------------------------------------------------------------------------------
+
+predictions_6D_future = model6D.predict(future_x)
+
+print(f"O erro nos dados depois de 2000 foi de: {mean_absolute_error(future_y, predictions_6D_future)}ºC")
+
+print(f"A previsão do modelo para a temperatura em 2060 é de {round(model6D.predict([[2060]])[0], 5)}ºC")
+
