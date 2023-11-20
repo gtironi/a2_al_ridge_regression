@@ -38,7 +38,7 @@ alphas = [10**i for i in range(-2, 5)] #set the values of alpha to test
 poly_predictions_alphas = []
 
 for alpha in alphas: #execute the model with each alpha
-    model = make_pipeline(PolynomialFeatures(2), Ridge(alpha=alpha)) ### Aqui precisei normalizar por que o grau estava fazendo os valores ficarem muito grandes.
+    model = make_pipeline(PolynomialFeatures(2), Ridge(alpha=alpha))
     model.fit(x_train, y_train)
     poly_predictions_alphas.append(model.predict(x_test))
     
@@ -51,7 +51,7 @@ degrees = [1, 2, 4, 6] #set the polynom degress to test
 multi_poly_predictions = []
 
 for i in degrees: #execute the model for each degree
-    model = make_pipeline(PolynomialFeatures(i), Ridge(alpha=1)) ### Aqui precisei normalizar por que o grau estava fazendo os valores ficarem muito grandes.
+    model = make_pipeline(PolynomialFeatures(i), Ridge(alpha=1)) 
     model.fit(x_train, y_train)
     multi_poly_predictions.append(model.predict(x_test))
 
@@ -66,7 +66,7 @@ multi_poly_predictions_alphas = []
 
 for i in degrees:
     for alpha in alphas:
-        model = make_pipeline(PolynomialFeatures(i), Ridge(alpha=alpha)) ### Aqui precisei normalizar por que o grau estava fazendo os valores ficarem muito grandes.
+        model = make_pipeline(PolynomialFeatures(i), Ridge(alpha=alpha)) 
         model.fit(x_train, y_train)
         multi_poly_predictions_alphas.append(model.predict(x_test))
     
@@ -74,3 +74,13 @@ for i in degrees:
 #     print('')
 #     for j in range(len(alphas)):
 #         print(f'Degree {degrees[i]} and Alpha {alphas[j]}: {multi_poly_predictions_alphas[i*j][0]}')
+
+# Cross Validation ------------------------------------------------------------------------------------------
+from sklearn import model_selection
+
+kfold = model_selection.KFold(n_splits=10, random_state=42, shuffle=True) #create a generator for a 10-fold
+score_model = make_pipeline(PolynomialFeatures(4), Ridge(alpha=1)) #defines the model as a polynomial of degree 4 and alpha 1
+results = model_selection.cross_val_score(score_model, x_train, y_train, cv=kfold, scoring= 'neg_mean_absolute_error') #train the model and apply the 10-fold cross validation
+
+print(f"score_model {results.mean()}") #print o erro encontrado no terminal
+
