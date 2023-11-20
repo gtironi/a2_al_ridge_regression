@@ -90,7 +90,7 @@ results = model_selection.cross_val_score(score_model, x_train, y_train, cv=kfol
 
 # Optimizing alpha and degree ------------------------------------------------------------------------------------------
 
-alphas = [10**i for i in range(0, 5)] #set the values of alpha to test
+alphas = [10**i for i in range(0, 10)] #set the values of alpha to test
 degrees = [1, 2, 3, 4, 5, 6, 7] #set of degrees to test
 scores = []
 best_alphas = []
@@ -108,18 +108,17 @@ for i in degrees: #using RidgeCV to select the best alpha for each degree
         best_alphas.append((i, best_alpha)) #stores the model best alpha in a list
         
 # print(scores)
-# print(best_scores)
 # print(best_alphas)
         
 # testing the models ------------------------------------------------------------------------------------------
 
 # 6 degress, alpha 1
-model6D = make_pipeline(PolynomialFeatures(6), Ridge(alpha=1)) 
+model6D = make_pipeline(PolynomialFeatures(6), Ridge(alpha=100000000)) 
 model6D.fit(x_train, y_train)
 predictions_6D = model6D.predict(x_test)
 
 # 4 degress, alpha 10000
-model4D = make_pipeline(PolynomialFeatures(4), Ridge(alpha=10000)) 
+model4D = make_pipeline(PolynomialFeatures(4), Ridge(alpha=1000)) 
 model4D.fit(x_train, y_train)
 predictions_4D = model4D.predict(x_test)
 
