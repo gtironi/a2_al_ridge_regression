@@ -1,8 +1,12 @@
 from data_handle import global_temperature_data
-from sklearn.linear_model import Ridge
+from sklearn.linear_model import Ridge, RidgeCV
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.pipeline import make_pipeline
 from ridge_model import ridge_fit, ridge_predict
+
+import warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning, module="sklearn")
+
 
 alpha = 1
 
@@ -64,8 +68,8 @@ alphas = [10**i for i in range(0, 5)] #set the values of alpha to test
 degrees = [1, 2, 4, 6]
 multi_poly_predictions_alphas = []
 
-for i in degrees:
-    for alpha in alphas:
+for i in degrees: #execute the model for each degree
+    for alpha in alphas: #execute the model for each alpha
         model = make_pipeline(PolynomialFeatures(i), Ridge(alpha=alpha)) 
         model.fit(x_train, y_train)
         multi_poly_predictions_alphas.append(model.predict(x_test))
@@ -82,5 +86,43 @@ kfold = model_selection.KFold(n_splits=10, random_state=42, shuffle=True) #creat
 score_model = make_pipeline(PolynomialFeatures(4), Ridge(alpha=1)) #defines the model as a polynomial of degree 4 and alpha 1
 results = model_selection.cross_val_score(score_model, x_train, y_train, cv=kfold, scoring= 'neg_mean_absolute_error') #train the model and apply the 10-fold cross validation
 
-print(f"score_model {results.mean()}") #print o erro encontrado no terminal
+# print(f"score_model {results.mean()}") 
 
+# Optimizing alpha and degree ------------------------------------------------------------------------------------------
+
+alphas = [10**i for i in range(0, 5)] #set the values of alpha to test
+degrees = [1, 2, 3, 4, 5, 6, 7] #set of degrees to test
+scores = []
+best_alphas = []
+best_scores = []
+
+for i in degrees: #using RidgeCV to select the best alpha for each degree
+        modelCV = make_pipeline(PolynomialFeatures(i), RidgeCV(alphas=alphas, cv = 10)) 
+        modelCV.fit(x_train, y_train)
+        
+        score = modelCV.score(x_train, y_train)
+        scores.append((i, score)) #stores the model score in a list
+        best_score = modelCV.named_steps['ridgecv'].best_score_ #verify the best score for the best alpha
+        best_scores.append((i, best_score)) #stores the model best score in a list
+        best_alpha = modelCV.named_steps['ridgecv'].alpha_ #verify the best alpha
+        best_alphas.append((i, best_alpha)) #stores the model best alpha in a list
+        
+# print(scores)
+# print(best_scores)
+# print(best_alphas)
+        
+# testing the models ------------------------------------------------------------------------------------------
+
+# 6 degress, alpha 1
+model6D = make_pipeline(PolynomialFeatures(6), Ridge(alpha=1)) 
+model6D.fit(x_train, y_train)
+predictions_6D = model6D.predict(x_test)
+
+# 4 degress, alpha 10000
+model4D = make_pipeline(PolynomialFeatures(4), Ridge(alpha=10000)) 
+model4D.fit(x_train, y_train)
+predictions_4D = model4D.predict(x_test)
+
+from sklearn.metrics import mean_absolute_error
+
+print(f"O erro do modelo P4 foi: {mean_absolute_error(test[target], predictions_4D)} ºC \nO erro do modelo P6 foi: {mean_absolute_error(test[target], predictions_6D)} ºC")
